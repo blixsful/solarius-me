@@ -1,0 +1,4 @@
+build/
+solme-8086
+*.vhd
+*.img

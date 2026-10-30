@@ -1,0 +1,36 @@
+#pragma once
+#include <array>
+#include "address_space.hpp"
+#include "cpu.hpp"
+#include "signal.hpp"
+
+namespace solme {
+
+class Cpu__CLASS__ : public Cpu {
+public:
+    Cpu__CLASS__(AddressSpace& memory, Signal& intr, u64 hz);
+
+    void reset() override;
+    u32 step() override;
+    bool idle() const override { return halted && !interruptPending(); }
+    u64 frequencyHz() const override { return clockHz; }
+    u64 instructionCount() const override { return instrCount; }
+    void dumpState(std::ostream& out) const override;
+    std::string traceLine() const override;
+    bool setEntry(const std::string& text) override;
+
+private:
+    bool interruptPending() const;
+    void takeInterrupt(u32 vector);
+    u8 fetch8();
+
+    AddressSpace& mem;
+    Signal& intrLine;
+    u64 clockHz;
+    u64 instrCount = 0;
+    bool halted = false;
+    Addr pc = 0;
+    std::array<u64, 16> regs{};
+};
+
+}

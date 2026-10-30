@@ -1,0 +1,10 @@
+# __NAME__ notes
+
+Decision log. One line per behaviour that is not obvious, with the source and how sure we are.
+
+| Topic | Behaviour | Source | Confidence (documented / observed / guess) |
+|-------|-----------|--------|--------------------------------------------|
+
+## Open questions
+
+## Test suites used

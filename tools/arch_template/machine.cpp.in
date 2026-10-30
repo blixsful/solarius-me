@@ -1,0 +1,21 @@
+#include <memory>
+#include "cpu___NAME__.hpp"
+#include "machine.hpp"
+
+namespace solme {
+
+namespace {
+
+void buildMachine(Machine& machine, const Options& options) {
+    AddressSpace& mem = machine.createSpace("mem", 32, 12);
+    u64 ram = options.opts.num("ram", 16ULL << 20);
+    mem.mapRam(0, ram);
+    u64 hz = options.opts.num("cpu-hz", 1000000);
+    machine.setCpu(std::make_unique<Cpu__CLASS__>(mem, machine.signal("cpu.intr"), hz));
+}
+
+}
+
+SOLME_REGISTER_MACHINE("__NAME__", "__NAME__-bare", "flat RAM, no devices (starter machine)", true, buildMachine);
+
+}

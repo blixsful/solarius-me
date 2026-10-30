@@ -1,0 +1,64 @@
+#include "cpu___NAME__.hpp"
+#include <cstdio>
+#include <cstdlib>
+
+namespace solme {
+
+Cpu__CLASS__::Cpu__CLASS__(AddressSpace& memory, Signal& intr, u64 hz) : mem(memory), intrLine(intr), clockHz(hz) {}
+
+void Cpu__CLASS__::reset() {
+    regs.fill(0);
+    pc = 0;
+    halted = false;
+    instrCount = 0;
+}
+
+bool Cpu__CLASS__::setEntry(const std::string& text) {
+    char* end = nullptr;
+    unsigned long long value = std::strtoull(text.c_str(), &end, 0);
+    if (end == text.c_str()) {
+        return false;
+    }
+    pc = value;
+    return true;
+}
+
+u8 Cpu__CLASS__::fetch8() {
+    u8 value = mem.read8(pc);
+    ++pc;
+    return value;
+}
+
+bool Cpu__CLASS__::interruptPending() const { return intrLine.level(); }
+
+void Cpu__CLASS__::takeInterrupt(u32 vector) { (void)vector; }
+
+u32 Cpu__CLASS__::step() {
+    if (halted) {
+        if (!interruptPending()) {
+            return 1;
+        }
+        halted = false;
+    }
+    u8 opcode = fetch8();
+    ++instrCount;
+    switch (opcode) {
+        default:
+            halted = true;
+            return 1;
+    }
+}
+
+void Cpu__CLASS__::dumpState(std::ostream& out) const {
+    char buffer[64];
+    std::snprintf(buffer, sizeof buffer, "PC=%llX\n", static_cast<unsigned long long>(pc));
+    out << buffer;
+}
+
+std::string Cpu__CLASS__::traceLine() const {
+    char buffer[64];
+    std::snprintf(buffer, sizeof buffer, "%llX", static_cast<unsigned long long>(pc));
+    return buffer;
+}
+
+}
